@@ -1,0 +1,124 @@
+
+  #include<SoftwareSerial.h>
+  #include<Servo.h>
+Servo x;
+char Incoming_value = 0; 
+//int bttx=9;    //tx of bluetooth module is connected to pin 9 of arduino
+//int btrx=10; 
+int r_motor_n = 10; //PWM control Right Motor +
+int r_motor_p = 11; //PWM control Right Motor -
+int l_motor_p = 9; //PWM control Left Motor -
+int l_motor_n = 6;
+int speedy = 255;
+//SoftwareSerial bluetooth(bttx,btrx);//Variable for storing Incoming_value
+void setup() 
+{
+  Serial.begin(9600);         //Sets the data rate in bits per second (baud) for serial data transmission
+  pinMode(5, OUTPUT); //PUMP
+  digitalWrite(5, LOW); 
+   digitalWrite(4, LOW); 
+  x.attach(4); //MOTOR  
+  x.write(0);
+//  bluetooth.begin(9600);
+  pinMode(r_motor_n, OUTPUT); //Set control pins to be outputs
+pinMode(r_motor_p, OUTPUT);
+pinMode(l_motor_p, OUTPUT);
+pinMode(l_motor_n, OUTPUT);
+//digitalWrite(r_motor_n, LOW); //set both motors off for start-up
+//digitalWrite(r_motor_p, LOW);
+//digitalWrite(l_motor_p, LOW);
+//digitalWrite(l_motor_n, LOW);
+digitalWrite(r_motor_n, HIGH); //set both motors off for start-up
+digitalWrite(r_motor_p, HIGH);
+digitalWrite(l_motor_p, HIGH);
+digitalWrite(l_motor_n, HIGH);//Sets digital pin 13 as output pin
+}
+void loop()
+{
+  if(Serial.available() > 0)  
+  {
+    Incoming_value = Serial.read();      //Read the incoming data and store it into variable Incoming_value
+    Serial.print(Incoming_value);        //Print Value of Incoming_value in Serial monitor
+    Serial.print("\n");        //New line 
+   switch(Incoming_value)
+{
+
+case 'S': // control to stop the robot
+digitalWrite(r_motor_n, LOW); 
+digitalWrite(r_motor_p, LOW);
+digitalWrite(l_motor_p, LOW);
+digitalWrite(l_motor_n, LOW);
+Serial.println("Stop");
+Incoming_value='*';
+break;
+
+case 'R': //control for right
+analogWrite(r_motor_n, speedy); 
+digitalWrite(r_motor_p, LOW);
+analogWrite(l_motor_p, speedy);
+digitalWrite(l_motor_n, LOW);
+Serial.println("right");
+Incoming_value='*';
+break;
+
+case 'L': //control for left
+analogWrite(r_motor_n, LOW); 
+digitalWrite(r_motor_p, speedy);
+analogWrite(l_motor_p, LOW);
+digitalWrite(l_motor_n, speedy);
+Serial.println("left");
+Incoming_value='*';
+break;
+
+case 'F': //control for forward
+analogWrite(r_motor_n, speedy); 
+digitalWrite(r_motor_p, LOW);
+analogWrite(l_motor_p, LOW);
+digitalWrite(l_motor_n, speedy);
+Serial.println("forward");
+Incoming_value='*';
+break;
+
+case 'B': //control for backward
+analogWrite(r_motor_n, LOW); 
+digitalWrite(r_motor_p, speedy);
+analogWrite(l_motor_p, speedy);
+digitalWrite(l_motor_n, LOW);
+Serial.println("back");
+Incoming_value='*';
+break;
+
+
+case 'P': // pump on
+digitalWrite(5, HIGH);
+Serial.println("pump on");
+Incoming_value='*';
+break;
+
+case 'p': // pump off
+digitalWrite(5, LOW); 
+Serial.println("pump off");
+Incoming_value='*';
+break;
+
+case 'U': // roller up
+x.write(0);
+Serial.println("roller up");
+Incoming_value='*';
+break;
+
+case 'u': // roller down
+x.write(135);
+Serial.println("roller down");
+Incoming_value='*';
+break;
+
+
+
+  }                            
+
+ 
+                  
+ 
+}      
+}            
